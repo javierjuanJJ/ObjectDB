@@ -13,7 +13,7 @@ public class Conexion {
     private static EntityManager em;
 
     static ODB odb;
-    private static final String url = "empresa.odb";
+    private static final String url = "objectdb:empresa.odb;drop";
 
     public static EntityManagerFactory getConnectionemf() throws Exception {
 
