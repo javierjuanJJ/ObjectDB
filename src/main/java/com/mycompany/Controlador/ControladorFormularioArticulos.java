@@ -70,11 +70,10 @@ public class ControladorFormularioArticulos {
 
         try {
             controladorarticulos = new ArticulosDAO();
-            Lista_de_articulos = controladorarticulos.findAll();
-            Lista_de_grupos = controladorarticulos.findAll_grupos();
+            Lista_de_articulos = controladorarticulos.findByExample(new Articulos());
+            Lista_de_grupos = controladorarticulos.findByExampleGrupos(new Grupos());
 
         } catch (Exception e) {
-            e.printStackTrace();
             Platform.exit();
         }
 

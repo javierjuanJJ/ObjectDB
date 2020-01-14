@@ -60,7 +60,7 @@ public class ControladorFormularioClientes {
 
         try {
             controladorclientes = new ClientesDAO();
-            Lista_de_clientes = controladorclientes.findAll();
+            Lista_de_clientes = controladorclientes.findByExample(new Clientes());
         } catch (Exception e) {
             (new Main()).mensajeExcepcion(e, e.getMessage());
             Platform.exit();

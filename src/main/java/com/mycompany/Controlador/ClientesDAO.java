@@ -6,16 +6,10 @@ import com.mycompany.Modelo.Grupos;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.neodatis.odb.Objects;
-import org.neodatis.odb.core.query.IQuery;
-import org.neodatis.odb.core.query.criteria.Where;
-import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
-
 import javafx.application.Platform;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
-import org.neodatis.odb.core.query.nq.SimpleNativeQuery;
 
 public class ClientesDAO implements GenericoDAO<Clientes> {
 
@@ -40,7 +34,7 @@ public class ClientesDAO implements GenericoDAO<Clientes> {
     }
 
     public Clientes findByPK(int id) throws Exception {
-        TypedQuery<Clientes> query = em.createQuery("SELECT c FROM Clientes c WHERE c.Id= " + id, Clientes.class);
+        TypedQuery<Clientes> query = em.createQuery("SELECT c FROM Clientes c WHERE c.id= " + id, Clientes.class);
         List<Clientes> Clientes_recibidos = query.getResultList();
         return Clientes_recibidos.get(0);
     }
@@ -75,7 +69,9 @@ public class ClientesDAO implements GenericoDAO<Clientes> {
 
         Clientes employee = em.find(Clientes.class, t.getId());
         em.getTransaction().begin();
-        employee = new Clientes(t);
+        employee.setNombre(t.getNombre());
+        employee.setDireccion(t.getDireccion());
+        employee.setpasswd(t.getpasswd());
         em.getTransaction().commit();
 
         return true;
@@ -93,7 +89,16 @@ public class ClientesDAO implements GenericoDAO<Clientes> {
 
     @Override
     public List<Clientes> findByExample(Object example) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Clientes> lista_Clientes = new ArrayList();
+        Clientes ejemplo = (Clientes) example;
+
+        String Query = "SELECT c FROM Clientes c" + " WHERE c.nombre LIKE '%" + ejemplo.getNombre() + "%' OR c.direccion LIKE '%" + ejemplo.getDireccion() + "%'";
+
+        TypedQuery<Clientes> query = em.createQuery(Query, Clientes.class);
+        lista_Clientes = query.getResultList();
+
+        return lista_Clientes;
+
     }
 
 }
