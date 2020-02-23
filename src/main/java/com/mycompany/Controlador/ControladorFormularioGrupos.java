@@ -1,6 +1,7 @@
 package com.mycompany.Controlador;
 
 
+import dao.ArticulosDAO;
 import com.mycompany.Modelo.Grupos;
 import com.mycompany.mavenproject1.Main;
 import java.io.IOException;

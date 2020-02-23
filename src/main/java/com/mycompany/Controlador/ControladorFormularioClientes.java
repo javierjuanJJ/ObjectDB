@@ -1,5 +1,6 @@
 package com.mycompany.Controlador;
 
+import dao.ClientesDAO;
 import com.mycompany.Modelo.Clientes;
 import com.mycompany.mavenproject1.Main;
 import java.io.IOException;
@@ -36,7 +37,8 @@ public class ControladorFormularioClientes {
     private Button boton_atras_clientes;
     @FXML
     private Button boton_buscar_por_id_clientes;
-
+    @FXML
+    private Label label_informacion;
     @FXML
     private Button siguiente_clientes;
     @FXML
@@ -60,7 +62,12 @@ public class ControladorFormularioClientes {
 
         try {
             controladorclientes = new ClientesDAO();
-            Lista_de_clientes = controladorclientes.findByExample(new Clientes());
+            Lista_de_clientes = controladorclientes.findAll();
+            Clientes cliente = Lista_de_clientes.get(0);
+            ComboBox_id_clientes.getItems().addAll(Lista_de_clientes);
+            ComboBox_id_clientes.getSelectionModel().select(0);
+            poner_informacion(cliente);
+            label_informacion.setText("Registro " + 1 + " de " + Lista_de_clientes.size());
         } catch (Exception e) {
             (new Main()).mensajeExcepcion(e, e.getMessage());
             Platform.exit();
@@ -123,7 +130,7 @@ public class ControladorFormularioClientes {
 
     public void actualizar_informacion() {
         Clientes cliente_seleccionado = coger_informacion();
-
+        cliente_seleccionado.setId(ComboBox_id_clientes.getSelectionModel().getSelectedItem().getId());
         try {
 
             if (!(controladorclientes.update(cliente_seleccionado))) {
@@ -141,7 +148,7 @@ public class ControladorFormularioClientes {
 
     public void eliminar_informacion() {
         Clientes cliente_seleccionado = coger_informacion();
-
+        cliente_seleccionado.setId(ComboBox_id_clientes.getSelectionModel().getSelectedItem().getId());
         try {
 
             if (!(controladorclientes.delete(cliente_seleccionado.getId()))) {
@@ -160,13 +167,9 @@ public class ControladorFormularioClientes {
     public void Buscar_por_id() {
         Clientes cliente_seleccionado = null;
         try {
-            cliente_seleccionado = (Clientes) controladorclientes
-                    .findByPK(Integer.parseInt(TextField_buscar_por_id_clientes.getText()));
-
-            ComboBox_id_clientes.getItems().clear();
-            ComboBox_id_clientes.getItems().add((Clientes) controladorclientes.findByPK(cliente_seleccionado.getId()));
-            ComboBox_id_clientes.getSelectionModel().select(0);
-
+            cliente_seleccionado = controladorclientes.findByPK(Integer.parseInt(TextField_buscar_por_id_clientes.getText()));
+            ComboBox_id_clientes.getSelectionModel().select(cliente_seleccionado);
+            label_informacion.setText("Registro " + (Lista_de_clientes.indexOf(cliente_seleccionado) + 1) + " de " + Lista_de_clientes.size());
         } catch (Exception e) {
             cliente_seleccionado = new Clientes();
             (new Main()).mensajeExcepcion(e, e.getMessage());
@@ -176,7 +179,7 @@ public class ControladorFormularioClientes {
     }
 
     public void poner_informacion(Clientes cliente) {
-        ComboBox_id_clientes.setPromptText(cliente.getId() + "");
+        ComboBox_id_clientes.getSelectionModel().select(cliente);
         TextField_Nombre_clientes.setText(cliente.getNombre());
         TextField_direccion.setText(cliente.getDireccion());
     }
@@ -238,8 +241,10 @@ public class ControladorFormularioClientes {
 
             if ((posicion == tamanyo) || (posicion == 0)) {
                 if (posicion == tamanyo) {
+
                     ultimo_clientes.setDisable(true);
                     siguiente_clientes.setDisable(true);
+
                 } else {
                     anterior_clientes.setDisable(true);
                     primero_clientes.setDisable(true);
@@ -249,9 +254,9 @@ public class ControladorFormularioClientes {
             cliente = Lista_de_clientes.get(posicion);
             ComboBox_id_clientes.getSelectionModel().select(posicion);
             poner_informacion(cliente);
-
+            label_informacion.setText("Registro " + (posicion + 1) + " de " + Lista_de_clientes.size());
         } catch (Exception e) {
-            (new Main()).mensajeExcepcion(e, e.getMessage());
+            posicion = 0;
         }
 
     }

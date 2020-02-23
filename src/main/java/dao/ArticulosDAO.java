@@ -1,5 +1,7 @@
-package com.mycompany.Controlador;
+package dao;
 
+import com.mycompany.Controlador.Conexion;
+import com.mycompany.Controlador.GenericoDAO;
 import com.mycompany.Modelo.Articulos;
 import com.mycompany.Modelo.Clientes;
 import com.mycompany.Modelo.Grupos;
@@ -15,26 +17,10 @@ import javax.persistence.TypedQuery;
 
 public class ArticulosDAO implements GenericoDAO<Articulos> {
 
-    private static final String sql_select_by_PK = "SELECT * FROM empresa_ad.articulos WHERE id=?;";
-    private static final String sql_select_by_PK_grupos = "SELECT * FROM empresa_ad.grupos WHERE id=?;";
-    private static final String sql_select_all = "SELECT * FROM empresa_ad.articulos;";
-    private static final String sql_select_all_grupos = "SELECT * FROM empresa_ad.grupos;";
-    private static final String sql_UPDATE = "UPDATE `empresa_ad`.`articulos` SET `nombre`=?, `precio`=?, `codigo`=?, `grupo`=? WHERE `id`=?;";
-    private static final String sql_INSERT = "INSERT INTO `empresa_ad`.`articulos` (`nombre`, `precio`, `codigo`, `grupo`) VALUES (?, ?, ?, ?);";
-    private static final String sql_DELETE = "DELETE FROM `empresa_ad`.`articulos` WHERE `id`=?;";
-    private static final String sql_INSERT_GRUPO = "INSERT INTO `empresa_ad`.`grupos` (`descripcion`) VALUES (?);";
-
-    private static EntityManagerFactory emf;
     private static EntityManager em;
 
-    public ArticulosDAO() {
-        try {
-            emf = Conexion.getConnectionemf();
-            em = Conexion.getConnectionem();
-
-        } catch (Exception e) {
-            Platform.exit();
-        }
+    public ArticulosDAO() throws Exception {
+        em = Conexion.getConnectionem();
     }
 
     public Articulos findByPK(int id_articulo) throws Exception {
@@ -81,6 +67,7 @@ public class ArticulosDAO implements GenericoDAO<Articulos> {
     public boolean insert(Articulos t) throws Exception {
         boolean resultado = true;
         em.getTransaction().begin();
+        t.setId(0);
         em.persist(t);
         em.getTransaction().commit();
 

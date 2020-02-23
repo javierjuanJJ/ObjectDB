@@ -1,5 +1,6 @@
 package com.mycompany.Controlador;
 
+import dao.ArticulosDAO;
 import java.io.IOException;
 import java.util.List;
 import com.mycompany.Modelo.Articulos;
@@ -17,10 +18,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import com.mycompany.mavenproject1.Main;
+import dao.GruposDAO;
 
 public class ControladorFormularioArticulos {
 
     private static ArticulosDAO controladorarticulos;
+    private static GruposDAO controladorgrupos;
     private static List<Articulos> Lista_de_articulos;
     private static List<Grupos> Lista_de_grupos;
     private static int pos;
@@ -64,16 +67,21 @@ public class ControladorFormularioArticulos {
     private ComboBox<Articulos> ComboBox_codigo_articulos;
     @FXML
     private TextField TextField_buscar_por_id_articulos;
+    @FXML
+    private Label label_informacion;
 
     @FXML
     public void initialize() {
 
         try {
             controladorarticulos = new ArticulosDAO();
-            Lista_de_articulos = controladorarticulos.findByExample(new Articulos());
-            Lista_de_grupos = controladorarticulos.findByExampleGrupos(new Grupos());
-
+            Lista_de_articulos = controladorarticulos.findAll();
+            Lista_de_grupos = controladorarticulos.findAll_grupos();
+            ComboBox_id_articulos.getItems().setAll(Lista_de_articulos);
+            poner_informacion(Lista_de_articulos.get(0));
+            label_informacion.setText("Registro " + 1 + " de " + Lista_de_articulos.size());
         } catch (Exception e) {
+
             Platform.exit();
         }
 
@@ -188,7 +196,7 @@ public class ControladorFormularioArticulos {
             ComboBox_id_articulos.getItems().clear();
             ComboBox_id_articulos.getItems().add(controladorarticulos.findByPK(articulo_seleccionado.getId()));
             ComboBox_id_articulos.getSelectionModel().select(0);
-
+            label_informacion.setText("Registro " + (Lista_de_articulos.indexOf(articulo_seleccionado) + 1) + " de " + Lista_de_articulos.size());
         } catch (Exception e) {
             poner_informacion(new Articulos());
         }
@@ -198,12 +206,14 @@ public class ControladorFormularioArticulos {
     public void poner_informacion(Articulos articulo) {
 
         try {
+            ComboBox_codigo_articulos.getSelectionModel().clearSelection();
+            ComboBox_codigo_articulos.getSelectionModel().select(articulo);
             TextField_Nombre_articulos.setText(articulo.getNombre());
             ComboBox_grupos_articulos.getItems().clear();
             ComboBox_grupos_articulos.getItems().add(controladorarticulos.findByPK_grupos(articulo.getGrupo()));
             ComboBox_grupos_articulos.getSelectionModel().select(0);
             TextField_precio_articulos.setText(articulo.getPrecio() + "");
-            ComboBox_codigo_articulos.setPromptText(articulo.getCodigo());
+
         } catch (Exception e) {
 
         }
@@ -228,7 +238,6 @@ public class ControladorFormularioArticulos {
             articulo.setNombre(TextField_Nombre_articulos.getText());
             articulo.setPrecio(Double.parseDouble(TextField_precio_articulos.getText()));
             articulo.setCodigo(ComboBox_codigo_articulos.getPromptText());
-            articulo.setId(id);
             articulo.setGrupo(cogergrupo().getId());
 
         } catch (Exception e) {
@@ -294,10 +303,9 @@ public class ControladorFormularioArticulos {
             articulo = Lista_de_articulos.get(posicion);
             ComboBox_id_articulos.getSelectionModel().select(posicion);
             poner_informacion(articulo);
-
+            label_informacion.setText("Registro " + (posicion + 1) + " de " + Lista_de_articulos.size());
         } catch (Exception e) {
-            (new Main()).mensajeExcepcion(e, e.getMessage());
+            posicion = 0;
         }
-
     }
 }
